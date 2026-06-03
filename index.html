@@ -7,20 +7,145 @@
 <meta name="description" content="2026년 국내 신규상장 ETF 정리 — 상장일·테마·운용사별 필터, 편입종목 실시간 조회">
 <title>국내 신규상장 ETF</title>
 <style>
-:root { color-scheme: light; }
+/* ========== THEME TOKENS ========== */
+:root, [data-theme="light"] {
+  --bg: #f7f8fa;
+  --panel: #ffffff;
+  --panel-2: #f8fafc;
+  --border: #e2e8f0;
+  --text: #1a1d24;
+  --text-strong: #0f172a;
+  --muted: #64748b;
+  --accent: #0ea5e9;
+  --accent-2: #6366f1;
+  --accent-soft: rgba(14,165,233,0.12);
+  --chip: #f1f5f9;
+  --chip-text: #475569;
+  --tag-bg: #eff6ff;
+  --tag-text: #1d4ed8;
+  --fee-bg: #fef3c7;
+  --fee-text: #92400e;
+  --op-bg: #f0fdf4;
+  --op-text: #166534;
+  --strategy-bg: #fefce8;
+  --strategy-bd: #eab308;
+  --strategy-title: #92400e;
+  --note-bg: #f0f9ff;
+  --note-bd: #0ea5e9;
+  --note-text: #475569;
+  --overlay: rgba(15,23,42,0.55);
+  --shadow-hover: 0 4px 12px rgba(14,165,233,0.08);
+  --modal-close-bg: #f1f5f9;
+  --modal-close-color: #64748b;
+  color-scheme: light;
+}
+
+[data-theme="dark"] {
+  --bg: #0b1220;
+  --panel: #121a2b;
+  --panel-2: #172033;
+  --border: #1f2a44;
+  --text: #e2e8f0;
+  --text-strong: #f1f5f9;
+  --muted: #94a3b8;
+  --accent: #38bdf8;
+  --accent-2: #818cf8;
+  --accent-soft: rgba(56,189,248,0.15);
+  --chip: #172033;
+  --chip-text: #cbd5e1;
+  --tag-bg: #1e293b;
+  --tag-text: #7dd3fc;
+  --fee-bg: #422006;
+  --fee-text: #fcd34d;
+  --op-bg: #052e16;
+  --op-text: #86efac;
+  --strategy-bg: #1c1505;
+  --strategy-bd: #ca8a04;
+  --strategy-title: #fcd34d;
+  --note-bg: #082f49;
+  --note-bd: #38bdf8;
+  --note-text: #cbd5e1;
+  --overlay: rgba(0,0,0,0.7);
+  --shadow-hover: 0 4px 16px rgba(56,189,248,0.18);
+  --modal-close-bg: #172033;
+  --modal-close-color: #94a3b8;
+  color-scheme: dark;
+}
+
+[data-theme="green"] {
+  --bg: #ecfdf5;
+  --panel: #ffffff;
+  --panel-2: #f0fdf4;
+  --border: #a7f3d0;
+  --text: #064e3b;
+  --text-strong: #022c22;
+  --muted: #047857;
+  --accent: #059669;
+  --accent-2: #047857;
+  --accent-soft: rgba(5,150,105,0.12);
+  --chip: #d1fae5;
+  --chip-text: #065f46;
+  --tag-bg: #d1fae5;
+  --tag-text: #065f46;
+  --fee-bg: #fef3c7;
+  --fee-text: #92400e;
+  --op-bg: #ecfccb;
+  --op-text: #3f6212;
+  --strategy-bg: #fefce8;
+  --strategy-bd: #eab308;
+  --strategy-title: #92400e;
+  --note-bg: #d1fae5;
+  --note-bd: #059669;
+  --note-text: #047857;
+  --overlay: rgba(6,78,59,0.55);
+  --shadow-hover: 0 4px 12px rgba(5,150,105,0.12);
+  --modal-close-bg: #d1fae5;
+  --modal-close-color: #047857;
+  color-scheme: light;
+}
+
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body {
   font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
-  background: #f7f8fa;
-  color: #1a1d24;
+  background: var(--bg);
+  color: var(--text);
   line-height: 1.55;
   padding: 20px;
   -webkit-text-size-adjust: 100%;
+  transition: background .15s ease, color .15s ease;
 }
 .container { max-width: 1200px; margin: 0 auto; }
-header { margin-bottom: 24px; }
-h1 { font-size: 24px; font-weight: 700; margin-bottom: 6px; color: #0f172a; }
-.subtitle { color: #64748b; font-size: 14px; }
+
+header { margin-bottom: 24px; display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex-wrap: wrap; }
+.header-left { flex: 1; min-width: 240px; }
+h1 { font-size: 24px; font-weight: 700; margin-bottom: 6px; color: var(--text-strong); }
+.subtitle { color: var(--muted); font-size: 14px; }
+
+/* Theme switcher (RS 스크리너와 동일 형태) */
+.themebar {
+  display: flex;
+  gap: 3px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 3px;
+  flex-shrink: 0;
+}
+.theme-chip {
+  background: transparent;
+  color: var(--muted);
+  border: none;
+  border-radius: 7px;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  user-select: none;
+  transition: all .12s ease;
+  font-family: inherit;
+}
+.theme-chip:hover { color: var(--text); }
+.theme-chip.active { background: var(--accent); color: var(--bg); }
 
 .stats {
   display: grid;
@@ -29,17 +154,17 @@ h1 { font-size: 24px; font-weight: 700; margin-bottom: 6px; color: #0f172a; }
   margin: 20px 0;
 }
 .stat-box {
-  background: white;
-  border: 1px solid #e2e8f0;
+  background: var(--panel);
+  border: 1px solid var(--border);
   border-radius: 10px;
   padding: 14px 16px;
 }
-.stat-num { font-size: 22px; font-weight: 700; color: #0ea5e9; }
-.stat-label { font-size: 12px; color: #64748b; margin-top: 2px; }
+.stat-num { font-size: 22px; font-weight: 700; color: var(--accent); }
+.stat-label { font-size: 12px; color: var(--muted); margin-top: 2px; }
 
 .controls {
-  background: white;
-  border: 1px solid #e2e8f0;
+  background: var(--panel);
+  border: 1px solid var(--border);
   border-radius: 10px;
   padding: 14px;
   margin-bottom: 16px;
@@ -49,37 +174,42 @@ h1 { font-size: 24px; font-weight: 700; margin-bottom: 6px; color: #0f172a; }
   align-items: center;
 }
 .filter-group { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
-.filter-label { font-size: 12px; color: #475569; font-weight: 600; margin-right: 4px; }
+.filter-label { font-size: 12px; color: var(--muted); font-weight: 600; margin-right: 4px; }
 .chip {
   padding: 5px 11px;
   border-radius: 20px;
-  background: #f1f5f9;
+  background: var(--chip);
   border: 1px solid transparent;
   font-size: 12px;
   cursor: pointer;
-  color: #475569;
+  color: var(--chip-text);
   transition: all 0.15s;
   user-select: none;
 }
-.chip:hover { background: #e2e8f0; }
-.chip.active { background: #0ea5e9; color: white; }
+.chip:hover { filter: brightness(0.95); }
+[data-theme="dark"] .chip:hover { filter: brightness(1.3); }
+.chip.active { background: var(--accent); color: var(--bg); border-color: var(--accent); }
+
 .search {
   flex: 1;
   min-width: 200px;
   padding: 10px 14px;
-  border: 1px solid #cbd5e1;
+  border: 1px solid var(--border);
   border-radius: 8px;
   font-size: 16px;
   outline: none;
+  background: var(--panel-2);
+  color: var(--text);
   -webkit-appearance: none;
   appearance: none;
 }
-.search:focus { border-color: #0ea5e9; box-shadow: 0 0 0 3px rgba(14,165,233,0.12); }
+.search::placeholder { color: var(--muted); }
+.search:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
 
 .date-section { margin-bottom: 24px; }
 .date-header {
-  background: linear-gradient(90deg, #0ea5e9, #6366f1);
-  color: white;
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  color: #ffffff;
   padding: 10px 16px;
   border-radius: 8px;
   font-weight: 600;
@@ -112,44 +242,44 @@ h1 { font-size: 24px; font-weight: 700; margin-bottom: 6px; color: #0f172a; }
   gap: 10px;
 }
 .etf-card {
-  background: white;
-  border: 1px solid #e2e8f0;
+  background: var(--panel);
+  border: 1px solid var(--border);
   border-radius: 10px;
   padding: 14px;
   cursor: pointer;
   transition: all 0.15s;
 }
 .etf-card:hover {
-  border-color: #0ea5e9;
+  border-color: var(--accent);
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(14, 165, 233, 0.08);
+  box-shadow: var(--shadow-hover);
 }
 .card-top { display: flex; justify-content: space-between; align-items: start; gap: 8px; margin-bottom: 8px; }
-.etf-name { font-weight: 600; font-size: 14px; color: #0f172a; line-height: 1.35; }
+.etf-name { font-weight: 600; font-size: 14px; color: var(--text-strong); line-height: 1.35; }
 .ticker {
-  background: #f1f5f9;
+  background: var(--chip);
   padding: 2px 7px;
   border-radius: 5px;
   font-family: "SF Mono", monospace;
   font-size: 11px;
-  color: #475569;
+  color: var(--chip-text);
   white-space: nowrap;
 }
 .card-meta { display: flex; gap: 6px; flex-wrap: wrap; font-size: 11px; }
 .tag {
   padding: 2px 7px;
   border-radius: 4px;
-  background: #eff6ff;
-  color: #1d4ed8;
+  background: var(--tag-bg);
+  color: var(--tag-text);
   font-weight: 500;
 }
-.tag.fee { background: #fef3c7; color: #92400e; }
-.tag.op { background: #f0fdf4; color: #166534; }
+.tag.fee { background: var(--fee-bg); color: var(--fee-text); }
+.tag.op  { background: var(--op-bg);  color: var(--op-text); }
 
 .overlay {
   display: none;
   position: fixed; inset: 0;
-  background: rgba(15, 23, 42, 0.55);
+  background: var(--overlay);
   z-index: 100;
   align-items: flex-start;
   justify-content: center;
@@ -158,93 +288,98 @@ h1 { font-size: 24px; font-weight: 700; margin-bottom: 6px; color: #0f172a; }
 }
 .overlay.show { display: flex; }
 .modal {
-  background: white;
+  background: var(--panel);
   border-radius: 14px;
   padding: 24px;
   max-width: 560px;
   width: 100%;
   max-height: calc(100vh - 80px);
   overflow-y: auto;
+  color: var(--text);
+  border: 1px solid var(--border);
 }
 .modal-close {
   float: right;
   border: none;
-  background: #f1f5f9;
+  background: var(--modal-close-bg);
   width: 30px; height: 30px;
   border-radius: 6px;
   font-size: 16px;
   cursor: pointer;
-  color: #64748b;
+  color: var(--modal-close-color);
 }
-.modal-close:hover { background: #e2e8f0; }
-.modal h2 { font-size: 18px; margin-bottom: 4px; line-height: 1.3; padding-right: 40px; }
-.modal-ticker { font-family: "SF Mono", monospace; color: #0ea5e9; font-size: 13px; margin-bottom: 16px; }
+.modal-close:hover { filter: brightness(0.95); }
+[data-theme="dark"] .modal-close:hover { filter: brightness(1.3); }
+.modal h2 { font-size: 18px; margin-bottom: 4px; line-height: 1.3; padding-right: 40px; color: var(--text-strong); }
+.modal-ticker { font-family: "SF Mono", monospace; color: var(--accent); font-size: 13px; margin-bottom: 16px; }
 .info-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 10px;
   margin-bottom: 18px;
   padding: 14px;
-  background: #f8fafc;
+  background: var(--panel-2);
   border-radius: 8px;
 }
-.info-item .label { font-size: 11px; color: #64748b; margin-bottom: 2px; }
-.info-item .val { font-size: 13px; color: #0f172a; font-weight: 500; }
+.info-item .label { font-size: 11px; color: var(--muted); margin-bottom: 2px; }
+.info-item .val { font-size: 13px; color: var(--text-strong); font-weight: 500; }
 .strategy {
-  background: #fefce8;
-  border-left: 3px solid #eab308;
+  background: var(--strategy-bg);
+  border-left: 3px solid var(--strategy-bd);
   padding: 12px 14px;
   border-radius: 6px;
   font-size: 13px;
   margin-bottom: 18px;
   line-height: 1.6;
-  color: #374151;
+  color: var(--text);
 }
 .strategy-title {
-  font-size: 11px; font-weight: 700; color: #92400e;
+  font-size: 11px; font-weight: 700; color: var(--strategy-title);
   margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px;
 }
-.links-title { font-size: 13px; font-weight: 600; margin-bottom: 8px; color: #1e293b; }
+.links-title { font-size: 13px; font-weight: 600; margin-bottom: 8px; color: var(--text-strong); }
 .holdings-note {
-  font-size: 12px; color: #64748b;
+  font-size: 12px; color: var(--note-text);
   margin-bottom: 10px; padding: 10px 12px;
-  background: #f0f9ff; border-radius: 6px;
-  border-left: 3px solid #0ea5e9;
+  background: var(--note-bg); border-radius: 6px;
+  border-left: 3px solid var(--note-bd);
 }
 .link-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 .link-btn {
   display: flex; align-items: center; justify-content: center;
   gap: 6px; padding: 10px 12px; border-radius: 7px;
   text-decoration: none; font-size: 13px; font-weight: 500;
-  border: 1px solid #e2e8f0; color: #1e293b;
-  background: white; transition: all 0.15s;
+  border: 1px solid var(--border); color: var(--text-strong);
+  background: var(--panel); transition: all 0.15s;
 }
-.link-btn:hover { border-color: #0ea5e9; background: #f0f9ff; color: #0369a1; }
-.link-btn.primary { background: #0ea5e9; border-color: #0ea5e9; color: white; }
-.link-btn.primary:hover { background: #0284c7; color: white; }
+.link-btn:hover { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); }
+.link-btn.primary { background: var(--accent); border-color: var(--accent); color: #ffffff; }
+.link-btn.primary:hover { filter: brightness(0.92); color: #ffffff; }
 .link-btn .arrow { font-size: 11px; opacity: 0.7; }
 
 footer {
   margin-top: 30px;
   padding-top: 16px;
-  border-top: 1px solid #e2e8f0;
+  border-top: 1px solid var(--border);
   font-size: 12px;
-  color: #64748b;
+  color: var(--muted);
   line-height: 1.7;
 }
-footer a { color: #0ea5e9; text-decoration: none; }
+footer a { color: var(--accent); text-decoration: none; }
+footer strong { color: var(--text-strong); }
 .empty-state {
   text-align: center;
   padding: 40px;
-  color: #94a3b8;
-  background: white;
+  color: var(--muted);
+  background: var(--panel);
   border-radius: 10px;
-  border: 1px dashed #cbd5e1;
+  border: 1px dashed var(--border);
 }
-
 @media (max-width: 640px) {
   body { padding: 12px; }
   h1 { font-size: 20px; }
+  header { flex-direction: column; align-items: stretch; }
+  .themebar { align-self: flex-start; }
   .stats { grid-template-columns: repeat(2, 1fr); gap: 8px; }
   .stat-num { font-size: 18px; }
   .controls { padding: 10px; gap: 10px; flex-direction: column; align-items: stretch; }
@@ -259,8 +394,15 @@ footer a { color: #0ea5e9; text-decoration: none; }
 <body>
 <div class="container">
   <header>
-    <h1>국내 신규상장 ETF 정리</h1>
-    <p class="subtitle">2026년 3월 17일 ~ 6월 2일 (예정) · 한국거래소(KRX) 유가증권시장 신규상장</p>
+    <div class="header-left">
+      <h1>국내 신규상장 ETF 정리</h1>
+      <p class="subtitle">2026년 3월 17일 ~ 6월 2일 (예정) · 한국거래소(KRX) 유가증권시장 신규상장</p>
+    </div>
+    <div class="themebar" id="themebar">
+      <button class="theme-chip" data-theme="light">화이트</button>
+      <button class="theme-chip" data-theme="dark">다크</button>
+      <button class="theme-chip" data-theme="green">그린</button>
+    </div>
   </header>
 
   <div class="stats" id="stats"></div>
@@ -269,19 +411,19 @@ footer a { color: #0ea5e9; text-decoration: none; }
     <input type="text" class="search" id="search" placeholder="ETF명, 티커, 운용사로 검색…">
     <div class="filter-group">
       <span class="filter-label">테마</span>
-      <span class="chip active" data-theme="all">전체</span>
-      <span class="chip" data-theme="반도체">반도체</span>
-      <span class="chip" data-theme="AI">AI</span>
-      <span class="chip" data-theme="로봇">로봇</span>
-      <span class="chip" data-theme="우주">우주</span>
-      <span class="chip" data-theme="바이오">바이오</span>
-      <span class="chip" data-theme="채권혼합">채권혼합</span>
-      <span class="chip" data-theme="커버드콜">커버드콜</span>
-      <span class="chip" data-theme="레버리지">레버리지</span>
-      <span class="chip" data-theme="월배당">월배당</span>
-      <span class="chip" data-theme="액티브">액티브</span>
-      <span class="chip" data-theme="미국">미국</span>
-      <span class="chip" data-theme="기타">기타</span>
+      <span class="chip active" data-theme-filter="all">전체</span>
+      <span class="chip" data-theme-filter="반도체">반도체</span>
+      <span class="chip" data-theme-filter="AI">AI</span>
+      <span class="chip" data-theme-filter="로봇">로봇</span>
+      <span class="chip" data-theme-filter="우주">우주</span>
+      <span class="chip" data-theme-filter="바이오">바이오</span>
+      <span class="chip" data-theme-filter="채권혼합">채권혼합</span>
+      <span class="chip" data-theme-filter="커버드콜">커버드콜</span>
+      <span class="chip" data-theme-filter="레버리지">레버리지</span>
+      <span class="chip" data-theme-filter="월배당">월배당</span>
+      <span class="chip" data-theme-filter="액티브">액티브</span>
+      <span class="chip" data-theme-filter="미국">미국</span>
+      <span class="chip" data-theme-filter="기타">기타</span>
     </div>
   </div>
 
@@ -398,6 +540,7 @@ function render(){
 
   const grouped = {};
   filtered.forEach(e => { (grouped[e.date] = grouped[e.date] || []).push(e); });
+
   const dates = Object.keys(grouped).sort().reverse();
 
   document.getElementById("content").innerHTML = dates.map(d => {
@@ -471,11 +614,11 @@ function closeModal(){
 
 document.addEventListener("keydown", e => { if (e.key === "Escape") closeModal(); });
 
-document.querySelectorAll(".chip").forEach(chip => {
+document.querySelectorAll(".chip[data-theme-filter]").forEach(chip => {
   chip.addEventListener("click", () => {
-    document.querySelectorAll(".chip").forEach(c => c.classList.remove("active"));
+    document.querySelectorAll(".chip[data-theme-filter]").forEach(c => c.classList.remove("active"));
     chip.classList.add("active");
-    activeTheme = chip.dataset.theme;
+    activeTheme = chip.dataset.themeFilter;
     render();
   });
 });
@@ -485,8 +628,22 @@ document.getElementById("search").addEventListener("input", e => {
   render();
 });
 
+/* ========== 테마 전환 (블랙/화이트/그린) ========== */
+function applyAppTheme(t) {
+  document.documentElement.setAttribute("data-theme", t);
+  localStorage.setItem("kr_etf_theme", t);
+  document.querySelectorAll("#themebar .theme-chip").forEach(c => {
+    c.classList.toggle("active", c.dataset.theme === t);
+  });
+}
+document.querySelectorAll("#themebar .theme-chip").forEach(c => {
+  c.addEventListener("click", () => applyAppTheme(c.dataset.theme));
+});
+applyAppTheme(localStorage.getItem("kr_etf_theme") || "light");
+
 renderStats();
 render();
 </script>
+
 </body>
 </html>
