@@ -105,8 +105,9 @@
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { overflow-x: hidden; max-width: 100vw; }
 body {
-  font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Pretendard", "Apple SD Gothic Neo", "Segoe UI", Roboto, sans-serif;
   background: var(--bg);
   color: var(--text);
   line-height: 1.55;
@@ -116,51 +117,18 @@ body {
 }
 .container { max-width: 1200px; margin: 0 auto; }
 
-header { margin-bottom: 24px; display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex-wrap: wrap; }
-.header-left { flex: 1; min-width: 240px; }
-h1 { font-size: 24px; font-weight: 700; margin-bottom: 6px; color: var(--text-strong); }
-.subtitle { color: var(--muted); font-size: 14px; }
+header { margin-bottom: 14px; display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex-wrap: wrap; }
+.header-left { flex: 1; min-width: 200px; }
+h1 { font-size: 22px; font-weight: 700; margin-bottom: 2px; color: var(--text-strong); }
+.subtitle { color: var(--muted); font-size: 13px; }
 
-/* Theme switcher (RS 스크리너와 동일 형태) */
-.themebar {
-  display: flex;
-  gap: 3px;
-  background: var(--panel);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 3px;
-  flex-shrink: 0;
+/* 컴팩트 기준일 배지 (RS 스크리너 .basedate 동일 규격) */
+.basedate {
+  color: var(--text); background: var(--panel); border: 1px solid var(--border);
+  padding: 6px 12px; border-radius: 8px; font-size: 12px;
+  white-space: nowrap; flex-shrink: 0;
 }
-.theme-chip {
-  background: transparent;
-  color: var(--muted);
-  border: none;
-  border-radius: 7px;
-  padding: 6px 12px;
-  font-size: 12px;
-  font-weight: 600;
-  cursor: pointer;
-  user-select: none;
-  transition: all .12s ease;
-  font-family: inherit;
-}
-.theme-chip:hover { color: var(--text); }
-.theme-chip.active { background: var(--accent); color: var(--bg); }
-
-.stats {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  gap: 12px;
-  margin: 20px 0;
-}
-.stat-box {
-  background: var(--panel);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 14px 16px;
-}
-.stat-num { font-size: 22px; font-weight: 700; color: var(--accent); }
-.stat-label { font-size: 12px; color: var(--muted); margin-top: 2px; }
+.basedate b { color: var(--accent); }
 
 .controls {
   background: var(--panel);
@@ -377,14 +345,22 @@ footer strong { color: var(--text-strong); }
 }
 @media (max-width: 640px) {
   body { padding: 12px; }
-  h1 { font-size: 20px; }
-  header { flex-direction: column; align-items: stretch; }
-  .themebar { align-self: flex-start; }
-  .stats { grid-template-columns: repeat(2, 1fr); gap: 8px; }
-  .stat-num { font-size: 18px; }
+  h1 { font-size: 19px; }
+  header { gap: 8px; }
+  .basedate { font-size: 11px; padding: 5px 10px; }
   .controls { padding: 10px; gap: 10px; flex-direction: column; align-items: stretch; }
-  .filter-group { overflow-x: auto; flex-wrap: nowrap; padding-bottom: 4px; -webkit-overflow-scrolling: touch; }
-  .chip { white-space: nowrap; padding: 7px 13px; font-size: 13px; flex-shrink: 0; }
+  /* 필터 칩: 본체는 고정, 칩만 가로 스크롤. 스크롤바 숨김으로 깔끔하게 */
+  .filter-group {
+    overflow-x: auto;
+    overflow-y: hidden;
+    flex-wrap: nowrap;
+    padding-bottom: 4px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    max-width: 100%;
+  }
+  .filter-group::-webkit-scrollbar { display: none; }
+  .chip { white-space: nowrap; padding: 6px 12px; font-size: 12px; flex-shrink: 0; }
   .etf-grid { grid-template-columns: 1fr; gap: 8px; }
   .link-btns { grid-template-columns: 1fr; }
   .info-grid { grid-template-columns: 1fr; gap: 8px; padding: 10px; }
@@ -395,17 +371,11 @@ footer strong { color: var(--text-strong); }
 <div class="container">
   <header>
     <div class="header-left">
-      <h1>국내 신규상장 ETF 정리</h1>
-      <p class="subtitle">2026년 3월 17일 ~ 6월 2일 (예정) · 한국거래소(KRX) 유가증권시장 신규상장</p>
+      <h1>ETF 추적기</h1>
+      <p class="subtitle">한국거래소(KRX) 신규상장 ETF · 상장일·테마·운용사 필터, 편입종목 실시간 조회</p>
     </div>
-    <div class="themebar" id="themebar">
-      <button class="theme-chip" data-theme="light">화이트</button>
-      <button class="theme-chip" data-theme="dark">다크</button>
-      <button class="theme-chip" data-theme="green">그린</button>
-    </div>
+    <div class="basedate" id="basedate">기준일 –</div>
   </header>
-
-  <div class="stats" id="stats"></div>
 
   <div class="controls">
     <input type="text" class="search" id="search" placeholder="ETF명, 티커, 운용사로 검색…">
@@ -430,7 +400,7 @@ footer strong { color: var(--text-strong); }
   <div id="content"></div>
 
   <footer>
-    <p><strong>📌 편입종목·비중 안내</strong></p>
+    <p><strong>편입종목·비중 안내</strong></p>
     <p>각 ETF는 매일 자산구성내역(PDF)이 갱신됩니다. 카드를 클릭하면 표시되는 <strong>ETF CHECK / 네이버 금융</strong> 링크로 최신 편입종목과 비중을 확인하세요.</p>
     <p style="margin-top:8px">데이터: <a href="https://data.krx.co.kr/" target="_blank">KRX</a> · <a href="https://kind.krx.co.kr/" target="_blank">KIND 공시</a> · <a href="https://unjena.com/" target="_blank">언제나닷컴</a> · 매주 월요일 자동 업데이트</p>
   </footer>
@@ -507,14 +477,12 @@ function escape(s){ return String(s).replace(/[&<>"]/g, m => ({"&":"&amp;","<":"
 function shortOp(op){ return op.replace("자산운용","").replace("투자신탁","").trim(); }
 
 function renderStats(){
-  const dates = [...new Set(ETFS.map(e=>e.date))];
-  const ops = [...new Set(ETFS.map(e=>e.op))];
-  document.getElementById("stats").innerHTML = `
-    <div class="stat-box"><div class="stat-num">${ETFS.length}</div><div class="stat-label">전체 신규상장 ETF</div></div>
-    <div class="stat-box"><div class="stat-num">${dates.length}</div><div class="stat-label">상장일 (영업일)</div></div>
-    <div class="stat-box"><div class="stat-num">${ops.length}</div><div class="stat-label">운용사</div></div>
-    <div class="stat-box"><div class="stat-num">2026.03–06</div><div class="stat-label">조사 기간</div></div>
-  `;
+  // 기준일 = ETFS에서 가장 최근 상장일 (스크리너 실행일 자동 반영)
+  const maxDate = ETFS.reduce((m, e) => e.date > m ? e.date : m, "");
+  const el = document.getElementById("basedate");
+  if (el) {
+    el.innerHTML = `기준일 <b>${maxDate}</b> · ${ETFS.length}개 ETF`;
+  }
 }
 
 function matchTheme(e, t){
@@ -549,7 +517,7 @@ function render(){
     return `
       <div class="date-section">
         <div class="date-header">
-          <span>📅 ${d.replace(/-/g,".")} 신규상장${upcoming ? '<span class="upcoming-pill">예정</span>' : ''}</span>
+          <span>${d.replace(/-/g,".")} 신규상장${upcoming ? '<span class="upcoming-pill">예정</span>' : ''}</span>
           <span class="date-count">${items.length}종</span>
         </div>
         <div class="etf-grid">
@@ -594,7 +562,7 @@ function openModal(idx){
       <div class="strategy-title">전략 / 컨셉</div>
       ${escape(e.desc)}
     </div>
-    <div class="links-title">📊 편입종목 & 비중 확인하기</div>
+    <div class="links-title">편입종목 &amp; 비중 확인하기</div>
     <div class="holdings-note">편입종목·비중은 매일 갱신됩니다. 아래 링크에서 최신 데이터를 확인하세요.</div>
     <div class="link-btns">
       <a class="link-btn primary" href="${etfcheckUrl}" target="_blank" rel="noopener">ETF CHECK <span class="arrow">↗</span></a>
@@ -628,18 +596,18 @@ document.getElementById("search").addEventListener("input", e => {
   render();
 });
 
-/* ========== 테마 전환 (블랙/화이트/그린) ========== */
+/* ===== 테마: 허브 단일 컨트롤러에서 신호 받음 (postMessage + URL 파라미터) ===== */
+const THEMES = ["light", "dark", "green"];
 function applyAppTheme(t) {
+  if (!THEMES.includes(t)) t = "light";
   document.documentElement.setAttribute("data-theme", t);
   localStorage.setItem("kr_etf_theme", t);
-  document.querySelectorAll("#themebar .theme-chip").forEach(c => {
-    c.classList.toggle("active", c.dataset.theme === t);
-  });
 }
-document.querySelectorAll("#themebar .theme-chip").forEach(c => {
-  c.addEventListener("click", () => applyAppTheme(c.dataset.theme));
+const _urlTheme = new URLSearchParams(location.search).get("theme");
+applyAppTheme(_urlTheme || localStorage.getItem("kr_etf_theme") || "light");
+window.addEventListener("message", e => {
+  if (e.data && e.data.type === "yeobtoni-theme") applyAppTheme(e.data.value);
 });
-applyAppTheme(localStorage.getItem("kr_etf_theme") || "light");
 
 renderStats();
 render();
