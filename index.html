@@ -142,17 +142,19 @@ h1 { font-size: 22px; font-weight: 700; margin-bottom: 2px; color: var(--text-st
   align-items: center;
 }
 .filter-group { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
-.filter-label { font-size: 12px; color: var(--muted); font-weight: 600; margin-right: 4px; }
 .chip {
-  padding: 5px 11px;
-  border-radius: 20px;
+  padding: 6px 12px;
+  border-radius: 999px;
   background: var(--chip);
   border: 1px solid transparent;
   font-size: 12px;
+  font-weight: 500;
+  line-height: 1.2;
   cursor: pointer;
   color: var(--chip-text);
   transition: all 0.15s;
   user-select: none;
+  white-space: nowrap;
 }
 .chip:hover { filter: brightness(0.95); }
 [data-theme="dark"] .chip:hover { filter: brightness(1.3); }
@@ -161,17 +163,20 @@ h1 { font-size: 22px; font-weight: 700; margin-bottom: 2px; color: var(--text-st
 .search {
   flex: 1;
   min-width: 200px;
-  padding: 10px 14px;
+  max-width: 340px;
+  padding: 7px 12px;
   border: 1px solid var(--border);
   border-radius: 8px;
-  font-size: 16px;
+  font-size: 13px;
+  height: 34px;
+  line-height: 1.2;
   outline: none;
   background: var(--panel-2);
   color: var(--text);
   -webkit-appearance: none;
   appearance: none;
 }
-.search::placeholder { color: var(--muted); }
+.search::placeholder { color: var(--muted); font-size: 13px; }
 .search:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
 
 .date-section { margin-bottom: 24px; }
@@ -380,7 +385,6 @@ footer strong { color: var(--text-strong); }
   <div class="controls">
     <input type="text" class="search" id="search" placeholder="ETF명, 티커, 운용사로 검색…">
     <div class="filter-group">
-      <span class="filter-label">테마</span>
       <span class="chip active" data-theme-filter="all">전체</span>
       <span class="chip" data-theme-filter="반도체">반도체</span>
       <span class="chip" data-theme-filter="AI">AI</span>
