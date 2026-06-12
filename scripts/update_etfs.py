@@ -24,6 +24,11 @@ try:
 except Exception as _e:
     print(f"[update_etfs] KIND 모듈 로드 실패: {_e}")
     fetch_kind_etfs = None
+try:
+    from fetch_dart_etfs import fetch_dart_etfs
+except Exception as _e:
+    print(f"[update_etfs] DART 모듈 로드 실패: {_e}")
+    fetch_dart_etfs = None
 
 CATEGORY_URL = "https://unjena.com/category/" + urllib.parse.quote("언제나 이티에프..", safe="")
 INDEX_HTML = os.path.join(os.path.dirname(__file__), "..", "index.html")
@@ -270,17 +275,21 @@ def main():
             new_entries.append((listing_date, etf))
             print(f"  + {listing_date} {etf['ticker']} {etf['name']}")
 
-    # 3b) KIND 추가 — unjena 가 빠뜨린 신규 상장 ETF 잡기
-    if fetch_kind_etfs is not None:
+    # 3b) KIND/DART 추가 — unjena 가 빠뜨린 신규 상장 ETF 잡기
+    if fetch_kind_etfs is not None or fetch_dart_etfs is not None:
         try:
             existing_names = {entry["name"] for _, entry in new_entries}
-            # 기존 ETFS 의 종목명도 확인 (ticker 없는 KIND 데이터의 중복 방지)
+            # 기존 ETFS 의 종목명도 확인 (ticker 없는 데이터의 중복 방지)
             existing_names_full = set()
             for m in re.finditer(r'name:"([^"]+)"', html):
                 existing_names_full.add(m.group(1))
             existing_names_full |= existing_names
 
-            kind_rows = fetch_kind_etfs(days_back=14)
+            # KIND 우선
+            kind_rows = fetch_kind_etfs(days_back=14) if fetch_kind_etfs else []
+            # DART 추가 (KIND 가 막혀도 DART 가 작동)
+            dart_rows = fetch_dart_etfs(days_back=14) if fetch_dart_etfs else []
+            kind_rows = list(kind_rows) + list(dart_rows)
             print(f"  KIND 발견: {len(kind_rows)}건")
             for row in kind_rows:
                 name = row.get("name", "").strip()

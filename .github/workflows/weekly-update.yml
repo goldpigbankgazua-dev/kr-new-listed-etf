@@ -22,6 +22,8 @@ jobs:
           python-version: '3.12'
 
       - name: Run update script
+        env:
+          DART_API_KEY: ${{ secrets.DART_API_KEY }}
         run: |
           python scripts/update_etfs.py
 
