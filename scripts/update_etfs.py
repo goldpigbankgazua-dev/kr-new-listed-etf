@@ -25,6 +25,11 @@ except Exception as _e:
     print(f"[update_etfs] KIND 모듈 로드 실패: {_e}")
     fetch_kind_etfs = None
 try:
+    from fetch_amc_etfs import fetch_all_amc_etfs
+except Exception as _e:
+    print(f"[update_etfs] AMC 모듈 로드 실패: {_e}")
+    fetch_all_amc_etfs = None
+try:
     from fetch_dart_etfs import fetch_dart_etfs
 except Exception as _e:
     print(f"[update_etfs] DART 모듈 로드 실패: {_e}")
