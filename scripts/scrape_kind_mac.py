@@ -1,40 +1,41 @@
 #!/usr/bin/env python3
-"""KIND 신규상장 ETF 스크래퍼 — 맥 launchd 에서 매일 1회 실행.
+"""KIND 신규상장 ETF 스크래퍼 — 맥 launchd 에서 매일 실행.
 
-GitHub Actions IP 가 KIND 차단당해서 사용자 맥에서 fetch.
-결과: modules/etf/data/kind_listings.json 에 저장 → auto-sync 가 GitHub push.
-워크플로우 (KST 8시) 가 그 JSON 을 읽어서 ETFS 배열 갱신.
+KIND 의 진짜 AJAX endpoint (Chrome MCP 로 캡쳐):
+    POST https://kind.krx.co.kr/disclosure/disclosurebystocktype.do
+    form: method=searchDisclosureByStockTypeEtfSub
+          forward=disclosurebystocktype_etf_sub
+          reportNm=신규상장
+          fromDate=YYYY-MM-DD, toDate=YYYY-MM-DD
+          currentPageSize=100, pageIndex=1, orderMode=1, orderStat=D
+          (etfIsuSrtCd, reportCd, reportTmp, etfIsuSrtNm 은 빈 값)
 
-KIND 공시제목 공통 패턴 (이렌이 확인):
-    신규상장(<운용사> <종목 풀네임>증권상장지수투자신탁[주식], 상장일 YYYY.MM.DD)
+응답 HTML 에 패턴:
+    신규상장(<운용사브랜드> <종목명>증권상장지수투자신탁[주식|채권|...], 상장일 YYYY.MM.DD)
 """
+import http.cookiejar
 import json
 import os
 import re
 import ssl
 import sys
+import urllib.parse
 import urllib.request
-from datetime import datetime
+from datetime import datetime, timedelta
 
-# macOS Apple-system Python 의 SSL CERTIFICATE_VERIFY_FAILED 회피
-# (KIND 는 공공 사이트라 unverified 도 안전)
-SSL_CTX = ssl.create_default_context()
-SSL_CTX.check_hostname = False
-SSL_CTX.verify_mode = ssl.CERT_NONE
+URL_INIT = "https://kind.krx.co.kr/disclosure/disclosurebystocktype.do?method=searchDisclosureByStockTypeEtf"
+URL_POST = "https://kind.krx.co.kr/disclosure/disclosurebystocktype.do"
 
-URL = "https://kind.krx.co.kr/disclosure/disclosurebystocktype.do?method=searchDisclosureByStockTypeEtf"
-
-# 스크립트 경로 기준으로 출력 경로 결정 (어디서 실행해도 동작)
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.normpath(os.path.join(SCRIPT_DIR, "..", "data", "kind_listings.json"))
 
-HEADERS = {
-    "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
-                  "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-    "Accept-Language": "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7",
-    "Referer": "https://kind.krx.co.kr/",
-}
+UA = ("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
+      "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
+
+# macOS Apple-system Python 의 SSL CERTIFICATE_VERIFY_FAILED 회피
+SSL_CTX = ssl.create_default_context()
+SSL_CTX.check_hostname = False
+SSL_CTX.verify_mode = ssl.CERT_NONE
 
 BRAND_TO_OP = {
     "KODEX": "삼성자산운용",
@@ -58,64 +59,107 @@ BRAND_TO_OP = {
 }
 
 
+def make_opener():
+    cj = http.cookiejar.CookieJar()
+    return urllib.request.build_opener(
+        urllib.request.HTTPCookieProcessor(cj),
+        urllib.request.HTTPSHandler(context=SSL_CTX),
+    )
+
+
+def fetch_kind(days_back: int = 30) -> str:
+    """KIND ETF 신규상장 공시 검색 — 응답 HTML 문자열."""
+    opener = make_opener()
+
+    # Step 1: 초기 GET (cookie/session)
+    req1 = urllib.request.Request(URL_INIT, headers={
+        "User-Agent": UA,
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+        "Accept-Language": "ko-KR,ko;q=0.9",
+    })
+    opener.open(req1, timeout=30).read()
+
+    # Step 2: POST 검색
+    today = datetime.now().date()
+    fromDate = (today - timedelta(days=days_back)).strftime("%Y-%m-%d")
+    toDate = today.strftime("%Y-%m-%d")
+
+    form = {
+        "method": "searchDisclosureByStockTypeEtfSub",
+        "forward": "disclosurebystocktype_etf_sub",
+        "currentPageSize": "100",
+        "pageIndex": "1",
+        "orderMode": "1",
+        "orderStat": "D",
+        "etfIsuSrtCd": "",
+        "reportCd": "",
+        "reportTmp": "",
+        "etfIsuSrtNm": "",
+        "reportNm": "신규상장",
+        "fromDate": fromDate,
+        "toDate": toDate,
+    }
+    body = urllib.parse.urlencode(form, encoding="utf-8").encode("utf-8")
+
+    req2 = urllib.request.Request(URL_POST, data=body, headers={
+        "User-Agent": UA,
+        "Accept": "text/html,*/*;q=0.8",
+        "Accept-Language": "ko-KR,ko;q=0.9",
+        "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+        "X-Requested-With": "XMLHttpRequest",
+        "Referer": URL_INIT,
+        "Origin": "https://kind.krx.co.kr",
+    })
+    resp = opener.open(req2, timeout=30)
+    data = resp.read()
+    for enc in ("utf-8", "euc-kr", "cp949"):
+        try:
+            return data.decode(enc)
+        except UnicodeDecodeError:
+            continue
+    return data.decode("utf-8", errors="ignore")
+
+
 def extract_brand_name(full: str) -> tuple:
     """공시 풀네임에서 (정리된 종목명, 운용사) 추출.
 
     예: "신한 SOL 우주항공밸류체인증권상장지수투자신탁[주식]"
         → ("SOL 우주항공밸류체인", "신한자산운용")
     """
-    # 브랜드 패턴 매칭 (긴 거 먼저 — DAISHIN343 이 DAISHIN 보다 우선)
     brands = sorted(BRAND_TO_OP.keys(), key=len, reverse=True)
     name = full
     op = ""
     for brand in brands:
-        # 브랜드가 단어 단위로 등장하는지 확인
-        m = re.search(rf"(?:^|[\s\(])({re.escape(brand)}\s*[\w가-힣&\.\-]+?)(?:증권상장지수투자신탁|증권상장지수증권|상장지수투자신탁|상장지수증권|ETF)", full)
+        m = re.search(
+            rf"(?:^|[\s\(])({re.escape(brand)}\s*[\w가-힣&\.\-\s]+?)"
+            r"(?:증권상장지수투자신탁|증권상장지수증권|상장지수투자신탁|상장지수증권|ETF)",
+            full,
+        )
         if m:
             name = m.group(1).strip()
             op = BRAND_TO_OP[brand]
             break
-    # 끝부분 정리 — "[주식]", "(채권)" 등 제거
     name = re.sub(r"\[.*?\]\s*$", "", name).strip()
     name = re.sub(r"\(.*?\)\s*$", "", name).strip()
     return name, op
 
 
-def main():
-    # KIND fetch
-    try:
-        req = urllib.request.Request(URL, headers=HEADERS)
-        with urllib.request.urlopen(req, timeout=30, context=SSL_CTX) as resp:
-            html = resp.read().decode("utf-8", errors="ignore")
-    except Exception as e:
-        print(f"[KIND] HTTP 실패: {e}", file=sys.stderr)
-        sys.exit(1)
-
-    if len(html) < 1000:
-        print(f"[KIND] 응답 너무 짧음 ({len(html)} bytes) — IP 차단 가능성", file=sys.stderr)
-        sys.exit(1)
-
-    # 패턴 매칭: "신규상장(...상장일 YYYY.MM.DD)"
-    # KIND 표 안의 공시제목 셀에 그대로 들어있음
+def parse_etfs(html: str) -> list:
+    """HTML 에서 신규상장 ETF 공시 추출."""
     results = []
-    seen_keys = set()
-
-    # 패턴 1: 표준 형식 "신규상장(<풀네임>, 상장일 YYYY.MM.DD)"
-    pattern = re.compile(r"신규상장\(\s*([^,]+?)\s*,\s*상장일\s+(\d{4}\.\d{2}\.\d{2})\s*\)")
+    seen = set()
+    pattern = re.compile(
+        r"신규상장\(\s*([^,]+?)\s*,\s*상장일\s+(\d{4}\.\d{2}\.\d{2})\s*\)"
+    )
     for m in pattern.finditer(html):
         full = m.group(1).strip()
+        full = full.replace("&amp;", "&").replace("&nbsp;", " ")
         date = m.group(2).replace(".", "-")
-
-        # HTML 엔티티 디코딩 (필요시)
-        full = full.replace("&amp;", "&").replace("&nbsp;", " ").replace("&lt;", "<").replace("&gt;", ">")
-
         key = f"{date}|{full}"
-        if key in seen_keys:
+        if key in seen:
             continue
-        seen_keys.add(key)
-
+        seen.add(key)
         name, op = extract_brand_name(full)
-
         results.append({
             "date": date,
             "name": name,
@@ -125,12 +169,26 @@ def main():
             "source": "kind",
             "raw_title": full,
         })
+    return results
 
-    # 결과 저장
+
+def main():
+    try:
+        html = fetch_kind(days_back=30)
+    except Exception as e:
+        print(f"[KIND] HTTP 실패: {e}", file=sys.stderr)
+        sys.exit(1)
+
+    if len(html) < 200:
+        print(f"[KIND] 응답 너무 짧음 ({len(html)} bytes)", file=sys.stderr)
+        sys.exit(1)
+
+    results = parse_etfs(html)
+
     os.makedirs(os.path.dirname(OUT), exist_ok=True)
     payload = {
         "fetched_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-        "source_url": URL,
+        "source_url": URL_POST,
         "count": len(results),
         "etfs": results,
     }
