@@ -294,8 +294,10 @@ def main():
             kind_rows = fetch_kind_etfs(days_back=14) if fetch_kind_etfs else []
             # DART 추가 (KIND 가 막혀도 DART 가 작동)
             dart_rows = fetch_dart_etfs(days_back=14) if fetch_dart_etfs else []
-            kind_rows = list(kind_rows) + list(dart_rows)
-            print(f"  KIND 발견: {len(kind_rows)}건")
+            # AMC (자산운용사 14개) 추가 — 가장 정확한 신규상장 소스
+            amc_rows = fetch_all_amc_etfs() if fetch_all_amc_etfs else []
+            kind_rows = list(kind_rows) + list(dart_rows) + list(amc_rows)
+            print(f"  KIND/DART/AMC 발견: {len(kind_rows)}건 (KIND {len([r for r in kind_rows if r.get('source')=='kind'])}, DART {len(dart_rows)}, AMC {len(amc_rows)})")
             for row in kind_rows:
                 name = row.get("name", "").strip()
                 if not name or name in existing_names_full:

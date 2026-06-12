@@ -24,6 +24,7 @@ jobs:
       - name: Run update script
         env:
           DART_API_KEY: ${{ secrets.DART_API_KEY }}
+          AMC_DEBUG: "1"
         run: |
           python scripts/update_etfs.py
 
