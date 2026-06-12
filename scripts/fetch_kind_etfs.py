@@ -146,7 +146,12 @@ def fetch_kind_disclosures(days_back: int = 30) -> list:
         "kindReportType": "0",
     }
 
-    html = http_post(KIND_ETF_AJAX, params, referer=KIND_REFERER)
+    try:
+        html = http_post(KIND_ETF_AJAX, params, referer=KIND_REFERER)
+        print(f"[fetch_kind] KIND 응답 길이: {len(html)} 글자, 첫 200자: {html[:200]!r}")
+    except Exception as e:
+        print(f"[fetch_kind] KIND HTTP 실패: {e}")
+        return []
 
     # 응답은 <table> partial. 각 <tr> 안에:
     #   td[0]: 공시일 (yyyy-mm-dd 또는 hh:mm)
