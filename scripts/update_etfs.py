@@ -295,6 +295,16 @@ def main():
                 name = row.get("name", "").strip()
                 if not name or name in existing_names_full:
                     continue
+                # 안전장치: 종목명이 자산운용사명/회사명이면 거부 (운용사 자체 공시 false positive 차단)
+                bad_suffixes = ("자산운용", "투신운용", "투자증권", "캐피탈", "금융지주", "증권")
+                if any(name.endswith(s) for s in bad_suffixes):
+                    print(f"  - [SKIP] 종목명이 회사명 같음: {name}")
+                    continue
+                # ETF 가 아닌 일반 공시 이름이면 거부
+                if not any(k in name for k in ["ETF", "상장지수투자신탁", "상장지수증권", "상장지수펀드"]) and not row.get("ticker"):
+                    # ticker 없고 ETF 키워드도 없으면 신뢰 못 함
+                    print(f"  - [SKIP] ETF 키워드 없음: {name}")
+                    continue
                 # ticker 있으면 ticker 기반 중복도 체크
                 tk = row.get("ticker", "").strip()
                 if tk and tk in existing_tickers:
@@ -312,7 +322,9 @@ def main():
                     existing_tickers.add(tk)
                 existing_names_full.add(name)
                 new_entries.append((listing_date, etf))
-                print(f"  + [KIND] {listing_date} {tk or '(no-ticker)'} {name}")
+                # source 라벨로 KIND/DART 구분
+                src = row.get("source", "kind").upper()
+                print(f"  + [{src}] {listing_date} {tk or '(no-ticker)'} {name}")
         except Exception as e:
             print(f"  [KIND] 실패: {e}")
 
