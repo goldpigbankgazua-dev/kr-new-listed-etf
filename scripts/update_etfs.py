@@ -314,14 +314,16 @@ def main():
                 existing_names_full.add(m.group(1))
             existing_names_full |= existing_names
 
-            # KIND 우선
+            # KIND JSON 우선 (맥 launchd 가 매일 갱신해서 push)
+            kind_json_rows = load_kind_json()
+            # KIND HTTP fetch (GitHub Actions IP 차단으로 0건 일반적, fallback 만)
             kind_rows = fetch_kind_etfs(days_back=14) if fetch_kind_etfs else []
-            # DART 추가 (KIND 가 막혀도 DART 가 작동)
+            # DART (운용사 발행공시 패턴 매칭)
             dart_rows = fetch_dart_etfs(days_back=14) if fetch_dart_etfs else []
-            # AMC (자산운용사 14개) 추가 — 가장 정확한 신규상장 소스
+            # AMC (운용사 사이트 — 보강용)
             amc_rows = fetch_all_amc_etfs() if fetch_all_amc_etfs else []
-            kind_rows = list(kind_rows) + list(dart_rows) + list(amc_rows)
-            print(f"  KIND/DART/AMC 발견: {len(kind_rows)}건 (KIND {len([r for r in kind_rows if r.get('source')=='kind'])}, DART {len(dart_rows)}, AMC {len(amc_rows)})")
+            kind_rows = list(kind_json_rows) + list(kind_rows) + list(dart_rows) + list(amc_rows)
+            print(f"  통합 발견: {len(kind_rows)}건 (KIND-JSON {len(kind_json_rows)}, KIND-HTTP {len([r for r in kind_rows if r.get('source')=='kind_http'])}, DART {len(dart_rows)}, AMC {len(amc_rows)})")
             for row in kind_rows:
                 name = row.get("name", "").strip()
                 if not name or name in existing_names_full:
