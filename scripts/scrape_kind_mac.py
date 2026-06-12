@@ -171,6 +171,12 @@ def extract_brand_name(full: str) -> tuple:
             name = m.group(1).strip()
             op = BRAND_TO_OP[brand]
             break
+    # 운용사 매핑 fallback — 풀네임의 한글 prefix 로 추정
+    if not op:
+        for prefix, op_name in sorted(KOR_OP_PREFIX.items(), key=lambda x: -len(x[0])):
+            if full.startswith(prefix):
+                op = op_name
+                break
     name = re.sub(r"\[.*?\]\s*$", "", name).strip()
     name = re.sub(r"\(.*?\)\s*$", "", name).strip()
     return name, op

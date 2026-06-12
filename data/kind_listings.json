@@ -1,5 +1,5 @@
 {
-  "fetched_at": "2026-06-12 23:07:04",
+  "fetched_at": "2026-06-12 23:09:10",
   "source_url": "https://kind.krx.co.kr/disclosure/disclosurebystocktype.do",
   "count": 36,
   "etfs": [
@@ -16,7 +16,7 @@
       "date": "2026-06-16",
       "name": "BNK BNK 27-12 특수채",
       "ticker": "",
-      "op": "",
+      "op": "BNK자산운용",
       "fee": "",
       "source": "kind",
       "raw_title": "BNK BNK 27-12 특수채(AAA이상)액티브증권상장지수투자신탁(채권)"
@@ -88,7 +88,7 @@
       "date": "2026-06-02",
       "name": "DB 마이티 5월만기자동연장특수채(AAA)액티브증권상장지수투자신탁",
       "ticker": "",
-      "op": "",
+      "op": "DB자산운용",
       "fee": "",
       "source": "kind",
       "raw_title": "DB 마이티 5월만기자동연장특수채(AAA)액티브증권상장지수투자신탁[채권]"
@@ -97,7 +97,7 @@
       "date": "2026-06-02",
       "name": "우리 WON 중단기종합채권",
       "ticker": "",
-      "op": "",
+      "op": "우리자산운용",
       "fee": "",
       "source": "kind",
       "raw_title": "우리 WON 중단기종합채권(A-이상)액티브증권상장지수투자신탁(채권)"
@@ -257,9 +257,9 @@
     },
     {
       "date": "2026-05-19",
-      "name": "마이다스 MIDAS 코스닥액티브증권상장지수투자신탁",
+      "name": "MIDAS 코스닥액티브",
       "ticker": "",
-      "op": "",
+      "op": "마이다스에셋자산운용",
       "fee": "",
       "source": "kind",
       "raw_title": "마이다스 MIDAS 코스닥액티브증권상장지수투자신탁(주식)"
@@ -268,7 +268,7 @@
       "date": "2026-05-19",
       "name": "미래에셋 TIGER 중기종합채권",
       "ticker": "",
-      "op": "",
+      "op": "미래에셋자산운용",
       "fee": "",
       "source": "kind",
       "raw_title": "미래에셋 TIGER 중기종합채권(A-이상)액티브증권상장지수투자신탁(채권)"
@@ -286,7 +286,7 @@
       "date": "2026-05-19",
       "name": "NH-Amundi HANARO 중기종합채권",
       "ticker": "",
-      "op": "",
+      "op": "NH아문디자산운용",
       "fee": "",
       "source": "kind",
       "raw_title": "NH-Amundi HANARO 중기종합채권(A-이상)액티브증권상장지수투자신탁(채권)"
