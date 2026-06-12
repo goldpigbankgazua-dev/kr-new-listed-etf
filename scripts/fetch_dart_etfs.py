@@ -43,17 +43,16 @@ BRAND_TO_OP = {
 # DART 공시검색 API
 DART_LIST_URL = "https://opendart.fss.or.kr/api/list.json"
 
-# ETF 식별 키워드 (report_nm 또는 corp_name 에 포함되어야 함)
-ETF_KEYWORDS = ["ETF", "상장지수투자신탁", "상장지수증권", "투자신탁"]
-# 신규상장/발행 관련 키워드 — DART 는 report_nm 에 "신규상장" 직접 안 나오므로 확장
+# ETF 직접 명시 키워드 (반드시 report_nm 에 있어야 함)
+ETF_STRICT_KEYWORDS = ["ETF", "상장지수투자신탁", "상장지수증권", "상장지수펀드"]
+# 신규상장 관련 키워드 (강한 신호만 — "투자설명서/신탁계약" 같은 광범위 키워드 제외)
 LISTING_KEYWORDS = [
-    "신규상장", "상장신청", "상장예비심사", "증권신고",
-    "투자설명서",  # ETF 발행 시 필수 공시
-    "증권발행실적보고서",  # 상장 완료 후 공시
-    "신탁계약",  # 신탁계약 설정/체결/변경
-    "(신규)",  # 일부 공시명에 신규 표시
+    "신규상장",
+    "상장신청",
+    "상장예비심사",
+    "(신규)",
+    "최초상장",
     "신규 설정",
-    "발행조건확정",
 ]
 
 USER_AGENT = (
@@ -150,60 +149,66 @@ def fetch_dart_etfs(days_back: int = 14) -> list:
     # 운용사 매칭된 샘플 (디버깅용)
     op_samples = []
 
+    # 자산운용사 패턴 (정확한 매칭만 — BNK캐피탈/BNK금융지주 같은 false positive 제외)
+    def is_asset_mgmt(corp_name: str) -> bool:
+        """corp_name 이 자산운용사인지 판정 (BNK캐피탈/BNK투자증권 같은 거 제외)."""
+        return corp_name.endswith("자산운용") or corp_name.endswith("투신운용") or corp_name.endswith("자산운용(주)")
+
     for item in all_items:
         report = item.get("report_nm", "").strip()
         corp = item.get("corp_name", "").strip()
         if not report or not corp:
             continue
 
-        # 운용사 매칭 (corp_name 에 운용사 정식명 또는 브랜드 들어가면)
-        op_match = None
-        for brand, op_full in BRAND_TO_OP.items():
-            if brand in corp or op_full in corp:
-                op_match = op_full
-                break
-
-        # 디버깅: 운용사 매칭된 공시 샘플 수집 (최대 30건)
-        if op_match and len(op_samples) < 30:
+        # 디버깅: 자산운용사 공시 샘플 수집 (최대 30건)
+        if is_asset_mgmt(corp) and len(op_samples) < 30:
             op_samples.append(f"  {corp[:20]:20s} | {report[:80]}")
 
-        # 신규상장 관련 공시만
-        if not any(k in report for k in LISTING_KEYWORDS):
+        # 1단계: corp_name 이 자산운용사 (정확 매칭)
+        if not is_asset_mgmt(corp):
+            stat_no_etf += 1
+            continue
+
+        # 2단계: report_nm 에 ETF/상장지수 명시 (반드시)
+        has_etf_kw = any(k in report for k in ETF_STRICT_KEYWORDS)
+        if not has_etf_kw:
+            stat_no_etf += 1
+            continue
+
+        # 3단계: 신규상장 관련 키워드 (강한 신호만)
+        is_new_listing = any(k in report for k in LISTING_KEYWORDS)
+        if not is_new_listing:
             stat_no_listing += 1
             continue
 
-        # ETF 식별: report_nm 또는 corp_name 에 ETF 키워드 또는 브랜드명 포함
-        is_etf = (
-            any(k in report for k in ETF_KEYWORDS)
-            or any(k in corp for k in ETF_KEYWORDS)
-            or any(brand in corp for brand in BRAND_TO_OP)
-            or any(brand in report for brand in BRAND_TO_OP)
-            or op_match is not None
-        )
-        if not is_etf:
-            stat_no_etf += 1
-            continue
         stat_pass += 1
 
-        # 종목명 추정 — report_nm 에서 ETF 명 추출 (예: "[신규상장] 신한 SOL 우주항공밸류체인...")
-        # 또는 corp_name 그대로
-        name = corp
-        # report 안에 [신규상장(...)] 형태에서 종목명 추출 시도
+        # 종목명 추정 — report_nm 에서 ETF 명 추출
         import re
+        name = None
+        # 패턴 1: "신규상장(종목명)"
         m = re.search(r"신규상장\(([^)]+)\)", report)
         if m:
             name = m.group(1).strip()
-        m = re.search(r"신규상장\s*[:\(]?\s*([^,\)\[]+?(?:ETF|투자신탁|증권))", report)
-        if m and "투자신탁" in m.group(1):
-            name = m.group(1).strip()
+        # 패턴 2: "[신규상장] 종목명" 또는 "신규상장 종목명"
+        if not name:
+            m = re.search(r"신규상장\]?\s*[:：]?\s*([A-Za-z가-힣0-9]+\s*[A-Za-z가-힣0-9 ]+?(?:ETF|상장지수투자신탁|상장지수증권|상장지수펀드))", report)
+            if m:
+                name = m.group(1).strip()
+        # 패턴 3: report 안의 ETF 명 직접 추출 — "삼성KODEX미국S&P500ETF" 같은 형태
+        if not name:
+            m = re.search(r"([A-Za-z가-힣][\w가-힣 ]*?(?:ETF|상장지수투자신탁|상장지수증권|상장지수펀드))", report)
+            if m:
+                name = m.group(1).strip()
 
-        # 운용사 추정
-        op = item.get("flr_nm", "").strip()  # 신고인 (제출인)
-        if not op:
-            for brand, oop in BRAND_TO_OP.items():
-                if brand in name or brand in corp:
-                    op = oop
-                    break
+        # 종목명 추출 실패 또는 운용사명 그대로면 skip (false positive 차단)
+        if not name or is_asset_mgmt(name) or name == corp:
+            stat_pass -= 1
+            stat_no_etf += 1
+            continue
+
+        # 운용사 추정 — corp_name 그대로 사용 (이미 자산운용사임)
+        op = corp
 
         if name in seen_names:
             continue
