@@ -37,6 +37,30 @@ except Exception as _e:
 
 CATEGORY_URL = "https://unjena.com/category/" + urllib.parse.quote("언제나 이티에프..", safe="")
 INDEX_HTML = os.path.join(os.path.dirname(__file__), "..", "index.html")
+KIND_JSON_PATH = os.path.normpath(os.path.join(os.path.dirname(__file__), "..", "data", "kind_listings.json"))
+
+
+def load_kind_json() -> list:
+    """맥 launchd 가 push 한 KIND 스크래핑 결과 로드.
+
+    GitHub Actions IP 가 KIND 차단당해서 fetch_kind_etfs() 는 0 bytes.
+    대신 사용자 맥 launchd 가 매일 KIND 페이지 fetch → JSON 으로 저장 → push.
+    워크플로우는 이 JSON 만 읽음.
+    """
+    if not os.path.exists(KIND_JSON_PATH):
+        print(f"[update_etfs] kind_listings.json 없음 ({KIND_JSON_PATH})")
+        return []
+    try:
+        with open(KIND_JSON_PATH, "r", encoding="utf-8") as f:
+            data = json.load(f)
+        rows = data.get("etfs", [])
+        fetched = data.get("fetched_at", "")
+        print(f"[update_etfs] kind_listings.json 로드: {len(rows)}건 (fetched {fetched})")
+        return rows
+    except Exception as e:
+        print(f"[update_etfs] kind_listings.json 파싱 실패: {e}")
+        return []
+
 HEADERS = {
     "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
                   "AppleWebKit/537.36 (KHTML, like Gecko) "
