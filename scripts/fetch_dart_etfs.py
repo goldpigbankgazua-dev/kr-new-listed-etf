@@ -129,17 +129,47 @@ def fetch_dart_etfs(days_back: int = 14) -> list:
 
     print(f"[fetch_dart] 전체 수집: {len(all_items)}건")
 
+    # 통계: 어떤 corp_name 이 많은지 확인 (운용사 인지)
+    from collections import Counter
+    corp_counter = Counter()
+    for item in all_items:
+        c = item.get("corp_name", "").strip()
+        if c:
+            corp_counter[c] += 1
+    print("[fetch_dart] 상위 corp_name 10개:")
+    for name, cnt in corp_counter.most_common(10):
+        print(f"  {cnt:4d}건  {name}")
+
     # ETF + 신규상장 필터링
     results = []
     seen_names = set()
+    # 디버깅 통계
+    stat_no_listing = 0
+    stat_no_etf = 0
+    stat_pass = 0
+    # 운용사 매칭된 샘플 (디버깅용)
+    op_samples = []
+
     for item in all_items:
         report = item.get("report_nm", "").strip()
         corp = item.get("corp_name", "").strip()
         if not report or not corp:
             continue
 
+        # 운용사 매칭 (corp_name 에 운용사 정식명 또는 브랜드 들어가면)
+        op_match = None
+        for brand, op_full in BRAND_TO_OP.items():
+            if brand in corp or op_full in corp:
+                op_match = op_full
+                break
+
+        # 디버깅: 운용사 매칭된 공시 샘플 수집 (최대 30건)
+        if op_match and len(op_samples) < 30:
+            op_samples.append(f"  {corp[:20]:20s} | {report[:80]}")
+
         # 신규상장 관련 공시만
         if not any(k in report for k in LISTING_KEYWORDS):
+            stat_no_listing += 1
             continue
 
         # ETF 식별: report_nm 또는 corp_name 에 ETF 키워드 또는 브랜드명 포함
@@ -148,9 +178,12 @@ def fetch_dart_etfs(days_back: int = 14) -> list:
             or any(k in corp for k in ETF_KEYWORDS)
             or any(brand in corp for brand in BRAND_TO_OP)
             or any(brand in report for brand in BRAND_TO_OP)
+            or op_match is not None
         )
         if not is_etf:
+            stat_no_etf += 1
             continue
+        stat_pass += 1
 
         # 종목명 추정 — report_nm 에서 ETF 명 추출 (예: "[신규상장] 신한 SOL 우주항공밸류체인...")
         # 또는 corp_name 그대로
@@ -199,6 +232,13 @@ def fetch_dart_etfs(days_back: int = 14) -> list:
             "report": report,
         })
         print(f"[fetch_dart] ✓ {listing_date} {ticker or '(no-ticker)'} {name} ({op})")
+
+    # 디버깅 통계 출력
+    print(f"[fetch_dart] 필터링 결과: 신규상장키워드없음={stat_no_listing}, ETF아님={stat_no_etf}, 통과={stat_pass}")
+    if op_samples:
+        print(f"[fetch_dart] 운용사 매칭된 공시 샘플 (최대 30건):")
+        for s in op_samples:
+            print(s)
 
     return results
 
