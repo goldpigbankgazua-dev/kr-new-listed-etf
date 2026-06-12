@@ -11,9 +11,16 @@ KIND 공시제목 공통 패턴 (이렌이 확인):
 import json
 import os
 import re
+import ssl
 import sys
 import urllib.request
 from datetime import datetime
+
+# macOS Apple-system Python 의 SSL CERTIFICATE_VERIFY_FAILED 회피
+# (KIND 는 공공 사이트라 unverified 도 안전)
+SSL_CTX = ssl.create_default_context()
+SSL_CTX.check_hostname = False
+SSL_CTX.verify_mode = ssl.CERT_NONE
 
 URL = "https://kind.krx.co.kr/disclosure/disclosurebystocktype.do?method=searchDisclosureByStockTypeEtf"
 
@@ -78,7 +85,7 @@ def main():
     # KIND fetch
     try:
         req = urllib.request.Request(URL, headers=HEADERS)
-        with urllib.request.urlopen(req, timeout=30) as resp:
+        with urllib.request.urlopen(req, timeout=30, context=SSL_CTX) as resp:
             html = resp.read().decode("utf-8", errors="ignore")
     except Exception as e:
         print(f"[KIND] HTTP 실패: {e}", file=sys.stderr)
