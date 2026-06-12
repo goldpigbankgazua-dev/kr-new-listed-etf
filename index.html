@@ -570,7 +570,7 @@ function render(){
     return `
       <div class="date-section">
         <div class="date-header">
-          <span>${d.replace(/-/g,".")} 신규상장${upcoming ? '<span class="upcoming-pill">예정</span>' : ''}</span>
+          <span><span class="dh-date">${d.replace(/-/g,".")}</span><span class="dh-label">신규상장${upcoming ? '<span class="upcoming-pill">예정</span>' : ''}</span></span>
           <span class="date-count">${items.length}종</span>
         </div>
         <div class="etf-grid">
