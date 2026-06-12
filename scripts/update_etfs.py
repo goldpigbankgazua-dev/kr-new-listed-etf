@@ -17,6 +17,14 @@ import sys
 import urllib.parse
 import urllib.request
 
+# KIND 스크래퍼 (선택적 — fetch_kind_etfs.py 가 같은 폴더에 있어야 함)
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+try:
+    from fetch_kind_etfs import fetch_kind_etfs
+except Exception as _e:
+    print(f"[update_etfs] KIND 모듈 로드 실패: {_e}")
+    fetch_kind_etfs = None
+
 CATEGORY_URL = "https://unjena.com/category/" + urllib.parse.quote("언제나 이티에프..", safe="")
 INDEX_HTML = os.path.join(os.path.dirname(__file__), "..", "index.html")
 HEADERS = {
@@ -261,6 +269,43 @@ def main():
             existing_tickers.add(etf["ticker"])
             new_entries.append((listing_date, etf))
             print(f"  + {listing_date} {etf['ticker']} {etf['name']}")
+
+    # 3b) KIND 추가 — unjena 가 빠뜨린 신규 상장 ETF 잡기
+    if fetch_kind_etfs is not None:
+        try:
+            existing_names = {entry["name"] for _, entry in new_entries}
+            # 기존 ETFS 의 종목명도 확인 (ticker 없는 KIND 데이터의 중복 방지)
+            existing_names_full = set()
+            for m in re.finditer(r'name:"([^"]+)"', html):
+                existing_names_full.add(m.group(1))
+            existing_names_full |= existing_names
+
+            kind_rows = fetch_kind_etfs(days_back=14)
+            print(f"  KIND 발견: {len(kind_rows)}건")
+            for row in kind_rows:
+                name = row.get("name", "").strip()
+                if not name or name in existing_names_full:
+                    continue
+                # ticker 있으면 ticker 기반 중복도 체크
+                tk = row.get("ticker", "").strip()
+                if tk and tk in existing_tickers:
+                    continue
+                etf = {
+                    "name": name,
+                    "ticker": tk,
+                    "op": row.get("op", "").strip(),
+                    "fee": row.get("fee", "").strip(),
+                    "themes_extra": [],
+                    "desc": row.get("desc", "(상장예정)").strip() or "(상장예정)",
+                }
+                listing_date = row.get("date", today)
+                if tk:
+                    existing_tickers.add(tk)
+                existing_names_full.add(name)
+                new_entries.append((listing_date, etf))
+                print(f"  + [KIND] {listing_date} {tk or '(no-ticker)'} {name}")
+        except Exception as e:
+            print(f"  [KIND] 실패: {e}")
 
     if not new_entries:
         print("[update_etfs] 추가할 신규 ETF 없음. 종료.")
