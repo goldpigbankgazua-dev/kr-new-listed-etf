@@ -184,36 +184,55 @@ h1 { font-size: 22px; font-weight: 700; margin-bottom: 2px; color: var(--text-st
 .search::placeholder { color: var(--muted); font-size: 12px; }
 .search:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
 
-.date-section { margin-bottom: 24px; }
+.date-section { margin-bottom: 28px; }
 .date-header {
-  background: var(--accent-soft);
-  color: var(--accent);
+  background: linear-gradient(90deg, var(--accent-soft) 0%, transparent 65%);
+  color: var(--text-strong);
   border: none;
-  border-left: 4px solid var(--accent);
-  padding: 10px 16px;
-  border-radius: 8px;
+  padding: 10px 14px;
+  border-radius: 6px;
   font-weight: 600;
-  font-size: 15px;
-  margin-bottom: 10px;
+  font-size: 14px;
+  letter-spacing: -0.1px;
+  margin-bottom: 12px;
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
+.date-header > span:first-child {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+.date-header > span:first-child::before {
+  content: '';
+  display: inline-block;
+  width: 6px; height: 6px;
+  background: var(--accent);
+  border-radius: 50%;
+  flex-shrink: 0;
+}
 .date-count {
-  background: rgba(255,255,255,0.25);
-  padding: 2px 10px;
-  border-radius: 12px;
-  font-size: 12px;
+  background: transparent;
+  color: var(--muted);
+  border: 1px solid var(--border);
+  padding: 3px 11px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0;
 }
 .upcoming-pill {
   display: inline-block;
   font-size: 10px;
-  padding: 1px 6px;
-  background: rgba(255,255,255,0.25);
-  color: white;
+  padding: 2px 7px;
+  background: var(--accent);
+  color: #ffffff;
   border-radius: 4px;
-  margin-left: 8px;
+  margin-left: 4px;
   font-weight: 600;
+  letter-spacing: 0.2px;
+  vertical-align: middle;
 }
 
 .etf-grid {
