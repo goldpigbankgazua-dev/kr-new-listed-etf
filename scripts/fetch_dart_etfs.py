@@ -44,8 +44,17 @@ BRAND_TO_OP = {
 DART_LIST_URL = "https://opendart.fss.or.kr/api/list.json"
 
 # ETF 식별 키워드 (report_nm 또는 corp_name 에 포함되어야 함)
-ETF_KEYWORDS = ["ETF", "상장지수투자신탁", "상장지수증권"]
-LISTING_KEYWORDS = ["신규상장", "상장신청", "상장예비심사", "증권신고"]
+ETF_KEYWORDS = ["ETF", "상장지수투자신탁", "상장지수증권", "투자신탁"]
+# 신규상장/발행 관련 키워드 — DART 는 report_nm 에 "신규상장" 직접 안 나오므로 확장
+LISTING_KEYWORDS = [
+    "신규상장", "상장신청", "상장예비심사", "증권신고",
+    "투자설명서",  # ETF 발행 시 필수 공시
+    "증권발행실적보고서",  # 상장 완료 후 공시
+    "신탁계약",  # 신탁계약 설정/체결/변경
+    "(신규)",  # 일부 공시명에 신규 표시
+    "신규 설정",
+    "발행조건확정",
+]
 
 USER_AGENT = (
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
