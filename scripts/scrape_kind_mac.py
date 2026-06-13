@@ -237,6 +237,23 @@ def main():
     for r in results:
         print(f"  {r['date']}  {r['name']:30s}  ({r['op']})")
 
+    # JSON 저장 직후 index.html 병합까지 한 번에 실행.
+    # (이전엔 GH Actions(KST 08:00)에 맡겼는데, 스크래퍼 push(08:40경)가 더 늦어
+    #  매일 한 박자씩 누락됐음. 여기서 바로 돌려 타이밍 의존 제거.)
+    import subprocess
+    upd = os.path.join(os.path.dirname(os.path.abspath(__file__)), "update_etfs.py")
+    try:
+        r = subprocess.run(
+            [sys.executable, upd], capture_output=True, text=True, timeout=300
+        )
+        print(f"[update_etfs] rc={r.returncode}")
+        if r.stdout:
+            print(r.stdout.rstrip()[-3000:])
+        if r.returncode != 0 and r.stderr:
+            print(r.stderr.rstrip()[-1500:], file=sys.stderr)
+    except Exception as e:
+        print(f"[update_etfs] 호출 실패(스크래퍼는 정상): {e}", file=sys.stderr)
+
 
 if __name__ == "__main__":
     main()
