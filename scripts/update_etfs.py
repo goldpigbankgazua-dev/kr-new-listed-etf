@@ -282,8 +282,14 @@ def main():
     print(f"  기존 ETF 수: {len(existing_tickers)}")
 
     # 2) 카테고리에서 신규상장 글 URL 수집
-    cat_html = http_get(CATEGORY_URL)
-    post_urls = find_post_urls(cat_html)
+    # unjena 가 막혀도 아래 KIND/DART 병합은 계속돼야 함 (KIND 가 1차 출처).
+    # 이전엔 try 없이 노출돼 unjena 실패 시 전체 병합이 중단됐음.
+    try:
+        cat_html = http_get(CATEGORY_URL)
+        post_urls = find_post_urls(cat_html)
+    except Exception as e:
+        print(f"  [unjena] 카테고리 수집 실패 — KIND/DART 로만 진행: {e}")
+        post_urls = []
     print(f"  발견된 신규상장 글 수: {len(post_urls)}")
 
     # 3) 각 글에서 ETF 파싱, 신규 티커만 모음
