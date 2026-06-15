@@ -1,7 +1,7 @@
 {
-  "fetched_at": "2026-06-14 18:13:08",
+  "fetched_at": "2026-06-15 07:43:58",
   "source_url": "https://kind.krx.co.kr/disclosure/disclosurebystocktype.do",
-  "count": 36,
+  "count": 28,
   "etfs": [
     {
       "date": "2026-06-16",
@@ -254,78 +254,6 @@
       "fee": "",
       "source": "kind",
       "raw_title": "KB RISE SK하이닉스단일종목레버리지증권상장지수투자신탁(주식-파생형)"
-    },
-    {
-      "date": "2026-05-19",
-      "name": "MIDAS 코스닥액티브",
-      "ticker": "",
-      "op": "마이다스에셋자산운용",
-      "fee": "",
-      "source": "kind",
-      "raw_title": "마이다스 MIDAS 코스닥액티브증권상장지수투자신탁(주식)"
-    },
-    {
-      "date": "2026-05-19",
-      "name": "미래에셋 TIGER 중기종합채권",
-      "ticker": "",
-      "op": "미래에셋자산운용",
-      "fee": "",
-      "source": "kind",
-      "raw_title": "미래에셋 TIGER 중기종합채권(A-이상)액티브증권상장지수투자신탁(채권)"
-    },
-    {
-      "date": "2026-05-19",
-      "name": "IBK IBK 코스닥150",
-      "ticker": "",
-      "op": "IBK자산운용",
-      "fee": "",
-      "source": "kind",
-      "raw_title": "IBK IBK 코스닥150증권상장지수투자신탁[주식]"
-    },
-    {
-      "date": "2026-05-19",
-      "name": "NH-Amundi HANARO 중기종합채권",
-      "ticker": "",
-      "op": "NH아문디자산운용",
-      "fee": "",
-      "source": "kind",
-      "raw_title": "NH-Amundi HANARO 중기종합채권(A-이상)액티브증권상장지수투자신탁(채권)"
-    },
-    {
-      "date": "2026-05-19",
-      "name": "TIME 글로벌휴머노이드로봇산업액티브",
-      "ticker": "",
-      "op": "타임폴리오자산운용",
-      "fee": "",
-      "source": "kind",
-      "raw_title": "타임폴리오 TIME 글로벌휴머노이드로봇산업액티브증권상장지수투자신탁[주식]"
-    },
-    {
-      "date": "2026-05-19",
-      "name": "SOL 코스닥TOP10",
-      "ticker": "",
-      "op": "신한자산운용",
-      "fee": "",
-      "source": "kind",
-      "raw_title": "신한 SOL 코스닥TOP10증권상장지수투자신탁[주식]"
-    },
-    {
-      "date": "2026-05-19",
-      "name": "KoAct 코스피액티브",
-      "ticker": "",
-      "op": "삼성액티브자산운용",
-      "fee": "",
-      "source": "kind",
-      "raw_title": "삼성액티브 KoAct 코스피액티브증권상장지수투자신탁[주식]"
-    },
-    {
-      "date": "2026-05-19",
-      "name": "SOL 코스피200채권혼합50",
-      "ticker": "",
-      "op": "신한자산운용",
-      "fee": "",
-      "source": "kind",
-      "raw_title": "신한 SOL 코스피200채권혼합50증권상장지수투자신탁[채권혼합]"
     }
   ]
 }
