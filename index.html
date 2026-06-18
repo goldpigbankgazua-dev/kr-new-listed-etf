@@ -398,6 +398,8 @@ footer strong { color: var(--text-strong); }
   .link-btns { grid-template-columns: 1fr; }
   .info-grid { grid-template-columns: 1fr; gap: 8px; padding: 10px; }
 }
+.basedate .fresh-line { display:inline-block; font-size:11.5px; color:var(--muted, #64748b); margin-top:2px; opacity:0.85; }
+.basedate .fresh-line b { font-weight:600; color:var(--ink, #0f172a); }
 </style>
 </head>
 <body>
@@ -562,12 +564,48 @@ function escape(s){ return String(s).replace(/[&<>"]/g, m => ({"&":"&amp;","<":"
 function shortOp(op){ return op.replace("자산운용","").replace("투자신탁","").trim(); }
 
 function renderStats(){
-  // 기준일 = ETFS에서 가장 최근 상장일 (스크리너 실행일 자동 반영)
+  // 기준일 = ETFS에서 가장 최근 상장일
   const maxDate = ETFS.reduce((m, e) => e.date > m ? e.date : m, "");
   const el = document.getElementById("basedate");
   if (el) {
     el.innerHTML = `기준일 <b>${maxDate}</b> · ${ETFS.length}개 ETF`;
   }
+  // 추가 표시: 마지막 데이터 확인 시각 + 다음 신규상장 예상일 (다음 화요일)
+  updateFreshnessBadge();
+}
+
+// 다음 화요일 계산 (오늘이 화요일이면 다음 주 화요일)
+function nextTuesday() {
+  const now = new Date();
+  const day = now.getDay();  // 0=일 1=월 2=화 ... 6=토
+  // 오늘이 화요일이면 +7, 그 외엔 다음 화요일까지의 일수
+  const daysToTue = day === 2 ? 7 : ((2 - day + 7) % 7 || 7);
+  const next = new Date(now);
+  next.setDate(now.getDate() + daysToTue);
+  return next.toISOString().slice(0, 10);
+}
+
+async function updateFreshnessBadge() {
+  let lastCheck = null;
+  try {
+    const res = await fetch("data/kind_listings.json?_=" + Date.now(), {cache:"no-store"});
+    if (res.ok) {
+      const d = await res.json();
+      lastCheck = d.fetched_at || null;
+    }
+  } catch(_) {}
+  const el = document.getElementById("basedate");
+  if (!el) return;
+  const lines = [];
+  // 기존 기준일 라인 유지
+  const maxDate = ETFS.reduce((m, e) => e.date > m ? e.date : m, "");
+  lines.push(`기준일 <b>${maxDate}</b> · ${ETFS.length}개 ETF`);
+  if (lastCheck) {
+    lines.push(`<span class="fresh-line">마지막 확인 <b>${lastCheck.replace(" ", " ")}</b> KST</span>`);
+  }
+  const nt = nextTuesday();
+  lines.push(`<span class="fresh-line">다음 신규상장 예상일 <b>${nt}</b> (화)</span>`);
+  el.innerHTML = lines.join('<br>');
 }
 
 function matchTheme(e, t){
