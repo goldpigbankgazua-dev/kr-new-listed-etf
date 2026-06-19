@@ -1,8 +1,53 @@
 {
-  "fetched_at": "2026-06-19 07:35:50",
+  "fetched_at": "2026-06-19 18:08:54",
   "source_url": "https://kind.krx.co.kr/disclosure/disclosurebystocktype.do",
-  "count": 28,
+  "count": 33,
   "etfs": [
+    {
+      "date": "2026-06-23",
+      "name": "ACE 코리아AI전력TOP10",
+      "ticker": "",
+      "op": "한국투자신탁운용",
+      "fee": "",
+      "source": "kind",
+      "raw_title": "한국투자 ACE 코리아AI전력TOP10증권상장지수투자신탁(주식)"
+    },
+    {
+      "date": "2026-06-23",
+      "name": "PLUS 200커버드콜액티브",
+      "ticker": "",
+      "op": "한화자산운용",
+      "fee": "",
+      "source": "kind",
+      "raw_title": "한화 PLUS 200커버드콜액티브증권상장지수투자신탁(주식-파생형)"
+    },
+    {
+      "date": "2026-06-23",
+      "name": "IBK IBK 코스피액티브",
+      "ticker": "",
+      "op": "IBK자산운용",
+      "fee": "",
+      "source": "kind",
+      "raw_title": "IBK IBK 코스피액티브증권상장지수투자신탁[주식]"
+    },
+    {
+      "date": "2026-06-23",
+      "name": "KODEX 전고체배터리ESS TOP2플러스",
+      "ticker": "",
+      "op": "삼성자산운용",
+      "fee": "",
+      "source": "kind",
+      "raw_title": "삼성 KODEX 전고체배터리ESS TOP2플러스증권상장지수투자신탁[주식]"
+    },
+    {
+      "date": "2026-06-23",
+      "name": "한국투자 ACE K반도체TOP2+증권상장지수투자신탁",
+      "ticker": "",
+      "op": "한국투자신탁운용",
+      "fee": "",
+      "source": "kind",
+      "raw_title": "한국투자 ACE K반도체TOP2+증권상장지수투자신탁(주식)"
+    },
     {
       "date": "2026-06-16",
       "name": "SOL 우주항공밸류체인",
