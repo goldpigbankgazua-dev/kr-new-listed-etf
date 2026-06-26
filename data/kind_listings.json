@@ -1,8 +1,17 @@
 {
-  "fetched_at": "2026-06-26 07:30:27",
+  "fetched_at": "2026-06-26 18:06:03",
   "source_url": "https://kind.krx.co.kr/disclosure/disclosurebystocktype.do",
-  "count": 17,
+  "count": 18,
   "etfs": [
+    {
+      "date": "2026-06-30",
+      "name": "KIWOOM 코스닥150커버드콜액티브",
+      "ticker": "",
+      "op": "키움투자자산운용",
+      "fee": "",
+      "source": "kind",
+      "raw_title": "키움 KIWOOM 코스닥150커버드콜액티브증권상장지수투자신탁[주식-파생형]"
+    },
     {
       "date": "2026-06-23",
       "name": "ACE 코리아AI전력TOP10",
