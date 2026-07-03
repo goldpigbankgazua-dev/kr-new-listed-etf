@@ -1,8 +1,26 @@
 {
-  "fetched_at": "2026-07-03 07:41:24",
+  "fetched_at": "2026-07-03 18:12:53",
   "source_url": "https://kind.krx.co.kr/disclosure/disclosurebystocktype.do",
-  "count": 12,
+  "count": 14,
   "etfs": [
+    {
+      "date": "2026-07-07",
+      "name": "KIWOOM 미국우주테크TOP2채권혼합50",
+      "ticker": "",
+      "op": "키움투자자산운용",
+      "fee": "",
+      "source": "kind",
+      "raw_title": "키움 KIWOOM 미국우주테크TOP2채권혼합50증권상장지수투자신탁[채권혼합]"
+    },
+    {
+      "date": "2026-07-07",
+      "name": "한국투자 ACE K방산TOP5+증권상장지수투자신탁",
+      "ticker": "",
+      "op": "한국투자신탁운용",
+      "fee": "",
+      "source": "kind",
+      "raw_title": "한국투자 ACE K방산TOP5+증권상장지수투자신탁(주식)"
+    },
     {
       "date": "2026-06-30",
       "name": "KIWOOM 코스닥150커버드콜액티브",
