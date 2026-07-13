@@ -1,7 +1,7 @@
 {
-  "fetched_at": "2026-07-12 18:00:05",
+  "fetched_at": "2026-07-13 18:14:23",
   "source_url": "https://kind.krx.co.kr/disclosure/disclosurebystocktype.do",
-  "count": 17,
+  "count": 14,
   "etfs": [
     {
       "date": "2026-07-14",
@@ -128,33 +128,6 @@
       "fee": "",
       "source": "kind",
       "raw_title": "한국투자 ACE K반도체TOP2+증권상장지수투자신탁(주식)"
-    },
-    {
-      "date": "2026-06-16",
-      "name": "SOL 우주항공밸류체인",
-      "ticker": "",
-      "op": "신한자산운용",
-      "fee": "",
-      "source": "kind",
-      "raw_title": "신한 SOL 우주항공밸류체인증권상장지수투자신탁[주식]"
-    },
-    {
-      "date": "2026-06-16",
-      "name": "BNK BNK 27-12 특수채",
-      "ticker": "",
-      "op": "BNK자산운용",
-      "fee": "",
-      "source": "kind",
-      "raw_title": "BNK BNK 27-12 특수채(AAA이상)액티브증권상장지수투자신탁(채권)"
-    },
-    {
-      "date": "2026-06-16",
-      "name": "KIWOOM 미국우주데이터센터인프라",
-      "ticker": "",
-      "op": "키움투자자산운용",
-      "fee": "",
-      "source": "kind",
-      "raw_title": "키움 KIWOOM 미국우주데이터센터인프라증권상장지수투자신탁[주식]"
     }
   ]
 }
