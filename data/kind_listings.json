@@ -1,8 +1,44 @@
 {
-  "fetched_at": "2026-07-15 18:00:50",
+  "fetched_at": "2026-07-17 18:12:41",
   "source_url": "https://kind.krx.co.kr/disclosure/disclosurebystocktype.do",
-  "count": 14,
+  "count": 18,
   "etfs": [
+    {
+      "date": "2026-07-21",
+      "name": "BNK BNK 스마트카",
+      "ticker": "",
+      "op": "BNK자산운용",
+      "fee": "",
+      "source": "kind",
+      "raw_title": "BNK BNK 스마트카증권상장지수투자신탁(주식)"
+    },
+    {
+      "date": "2026-07-21",
+      "name": "TIGER 미국테크NYSE100액티브",
+      "ticker": "",
+      "op": "미래에셋자산운용",
+      "fee": "",
+      "source": "kind",
+      "raw_title": "미래에셋 TIGER 미국테크NYSE100액티브증권상장지수투자신탁(주식)"
+    },
+    {
+      "date": "2026-07-21",
+      "name": "ACE K바이오코스닥액티브",
+      "ticker": "",
+      "op": "한국투자신탁운용",
+      "fee": "",
+      "source": "kind",
+      "raw_title": "한국투자 ACE K바이오코스닥액티브증권상장지수투자신탁(주식)"
+    },
+    {
+      "date": "2026-07-21",
+      "name": "IBK IBK 초단기채권액티브",
+      "ticker": "",
+      "op": "IBK자산운용",
+      "fee": "",
+      "source": "kind",
+      "raw_title": "IBK IBK 초단기채권액티브 증권상장지수투자신탁[채권]"
+    },
     {
       "date": "2026-07-14",
       "name": "KODEX 200커버드콜액티브",
