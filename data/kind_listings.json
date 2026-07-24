@@ -1,8 +1,53 @@
 {
-  "fetched_at": "2026-07-23 18:01:21",
+  "fetched_at": "2026-07-24 18:00:57",
   "source_url": "https://kind.krx.co.kr/disclosure/disclosurebystocktype.do",
-  "count": 13,
+  "count": 18,
   "etfs": [
+    {
+      "date": "2026-07-28",
+      "name": "키움 KIWOOM 미국CPU반도체TOP4+증권상장지수투자신탁",
+      "ticker": "",
+      "op": "키움투자자산운용",
+      "fee": "",
+      "source": "kind",
+      "raw_title": "키움 KIWOOM 미국CPU반도체TOP4+증권상장지수투자신탁[주식]"
+    },
+    {
+      "date": "2026-07-28",
+      "name": "KoAct 고배당액티브",
+      "ticker": "",
+      "op": "삼성액티브자산운용",
+      "fee": "",
+      "source": "kind",
+      "raw_title": "삼성액티브 KoAct 고배당액티브증권상장지수투자신탁[주식]"
+    },
+    {
+      "date": "2026-07-28",
+      "name": "RISE 코스닥커버드콜액티브",
+      "ticker": "",
+      "op": "KB자산운용",
+      "fee": "",
+      "source": "kind",
+      "raw_title": "KB RISE 코스닥커버드콜액티브증권상장지수투자신탁(주식-파생형)"
+    },
+    {
+      "date": "2026-07-28",
+      "name": "1Q 엔비디아알파벳미국채혼합50",
+      "ticker": "",
+      "op": "하나자산운용",
+      "fee": "",
+      "source": "kind",
+      "raw_title": "하나 1Q 엔비디아알파벳미국채혼합50증권상장지수투자신탁(채권혼합)"
+    },
+    {
+      "date": "2026-07-28",
+      "name": "MIDAS 바이오헬스케어액티브",
+      "ticker": "",
+      "op": "마이다스에셋자산운용",
+      "fee": "",
+      "source": "kind",
+      "raw_title": "마이다스 MIDAS 바이오헬스케어액티브증권상장지수투자신탁(주식)"
+    },
     {
       "date": "2026-07-21",
       "name": "BNK BNK 스마트카",
