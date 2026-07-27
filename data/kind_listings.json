@@ -1,7 +1,7 @@
 {
-  "fetched_at": "2026-07-26 18:01:31",
+  "fetched_at": "2026-07-27 07:44:27",
   "source_url": "https://kind.krx.co.kr/disclosure/disclosurebystocktype.do",
-  "count": 18,
+  "count": 17,
   "etfs": [
     {
       "date": "2026-07-28",
@@ -155,15 +155,6 @@
       "fee": "",
       "source": "kind",
       "raw_title": "한국투자 ACE K방산TOP5+증권상장지수투자신탁(주식)"
-    },
-    {
-      "date": "2026-06-30",
-      "name": "KIWOOM 코스닥150커버드콜액티브",
-      "ticker": "",
-      "op": "키움투자자산운용",
-      "fee": "",
-      "source": "kind",
-      "raw_title": "키움 KIWOOM 코스닥150커버드콜액티브증권상장지수투자신탁[주식-파생형]"
     }
   ]
 }
